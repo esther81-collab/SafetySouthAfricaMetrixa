@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'data.dart';
+import 'category_detail_page.dart';
 
 class CategoriesPage extends StatefulWidget {
   const CategoriesPage({super.key});
@@ -18,8 +19,9 @@ class _CategoriesPageState extends State<CategoriesPage> {
     final on = subscribed.contains(c.id);
     return InkWell(
       borderRadius: BorderRadius.circular(20),
-      onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${c.name} tips open in the next step')),
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => CategoryDetailPage(c)),
       ),
       child: Ink(
         decoration: BoxDecoration(

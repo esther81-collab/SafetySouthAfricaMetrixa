@@ -5,7 +5,8 @@ import 'data.dart';
 
 class TipCard extends StatelessWidget {
   final Tip tip;
-  const TipCard(this.tip, {super.key});
+  final bool savedMode;
+  const TipCard(this.tip, {super.key, this.savedMode = false});
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +15,27 @@ class TipCard extends StatelessWidget {
       listenable: appState,
       builder: (context, _) {
         final saved = appState.isSaved(tip.id);
+
+        final shareButton = FilledButton(
+          style: FilledButton.styleFrom(
+            backgroundColor: savedMode ? Colors.green : Colors.blue,
+          ),
+          onPressed: () => Share.share('${tip.title}\n\n${tip.body}'),
+          child: Text(savedMode ? 'Share' : 'Share Tip'),
+        );
+
+        final saveOrRemoveButton = FilledButton(
+          style: FilledButton.styleFrom(
+            backgroundColor: savedMode
+                ? Colors.red
+                : (saved ? Colors.grey : Colors.green),
+          ),
+          onPressed: () => appState.toggleSaved(tip.id),
+          child: Text(savedMode
+              ? 'Remove'
+              : (saved ? 'Saved ✓' : 'Save for Later')),
+        );
+
         return Card(
           elevation: 0,
           color: Colors.white,
@@ -27,7 +49,7 @@ class TipCard extends StatelessWidget {
                 Chip(
                   label: Text(cat.name,
                       style: TextStyle(color: cat.color, fontSize: 12)),
-                  backgroundColor: cat.color.withOpacity(0.1),
+                  backgroundColor: cat.color.withValues(alpha: 0.1),
                   side: BorderSide.none,
                   visualDensity: VisualDensity.compact,
                 ),
@@ -40,25 +62,9 @@ class TipCard extends StatelessWidget {
                 const SizedBox(height: 14),
                 Row(
                   children: [
-                    Expanded(
-                      child: FilledButton(
-                        style: FilledButton.styleFrom(
-                          backgroundColor: saved ? Colors.grey : Colors.green,
-                        ),
-                        onPressed: () => appState.toggleSaved(tip.id),
-                        child: Text(saved ? 'Saved ✓' : 'Save for Later'),
-                      ),
-                    ),
+                    Expanded(child: savedMode ? shareButton : saveOrRemoveButton),
                     const SizedBox(width: 12),
-                    Expanded(
-                      child: FilledButton(
-                        style: FilledButton.styleFrom(
-                            backgroundColor: Colors.blue),
-                        onPressed: () =>
-                            Share.share('${tip.title}\n\n${tip.body}'),
-                        child: const Text('Share Tip'),
-                      ),
-                    ),
+                    Expanded(child: savedMode ? saveOrRemoveButton : shareButton),
                   ],
                 ),
               ],

@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'categories_page.dart';
+import 'app_state.dart';
+import 'saved_page.dart';
+import 'emergency_page.dart';
 
-void main() => runApp(const AngelGuardApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await appState.load();
+  runApp(const AngelGuardApp());
+}
 
 class AngelGuardApp extends StatelessWidget {
   const AngelGuardApp({super.key});
@@ -35,8 +42,8 @@ class _ShellState extends State<Shell> {
   static const pages = <Widget>[
     HomePage(),
     CategoriesPage(),
-    PlaceholderPage('Saved'),
-    PlaceholderPage('Emergency'),
+    SavedPage(),
+    EmergencyPage(),
     PlaceholderPage('Settings'),
   ];
 
