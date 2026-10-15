@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_page.dart';
+import 'categories_page.dart';
 
 void main() => runApp(const AngelGuardApp());
 
@@ -33,7 +34,7 @@ class _ShellState extends State<Shell> {
 
   static const pages = <Widget>[
     HomePage(),
-    PlaceholderPage('Categories'),
+    CategoriesPage(),
     PlaceholderPage('Saved'),
     PlaceholderPage('Emergency'),
     PlaceholderPage('Settings'),
