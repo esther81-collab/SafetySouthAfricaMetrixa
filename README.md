@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # angel_guard
 
 A new Flutter project.
@@ -15,3 +16,6 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+=======
+# angel_guard
+>>>>>>> a7f7b260be130671e068d6990a94d22eda36b1ca
