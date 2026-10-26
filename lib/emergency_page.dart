@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'app_state.dart';
+import 'location_share.dart';
 
 class _Service {
   final String name, number, note;
@@ -216,21 +216,21 @@ class EmergencyPage extends StatelessWidget {
                             ActionChip(
                               label: const Text('Share'),
                               avatar: const Icon(Icons.share, size: 16),
-                              onPressed: () => Share.share(
+                              onPressed: () => shareWithLocation(context, 
                                   'I need help. Please check on me.'),
                             ),
                             ActionChip(
                               label: const Text("I'm Safe"),
                               avatar: const Icon(Icons.check_circle,
                                   size: 16, color: Colors.green),
-                              onPressed: () => Share.share(
+                              onPressed: () => shareWithLocation(context, 
                                   "I'm safe. Thanks for checking in."),
                             ),
                             ActionChip(
                               label: const Text('Need Help'),
                               avatar: const Icon(Icons.warning_amber,
                                   size: 16, color: Colors.orange),
-                              onPressed: () => Share.share(
+                              onPressed: () => shareWithLocation(context, 
                                   'I need help right now. Please call me.'),
                             ),
                           ],
