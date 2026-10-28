@@ -14,6 +14,7 @@ class TipCard extends StatelessWidget {
     return ListenableBuilder(
       listenable: appState,
       builder: (context, _) {
+        final t = appState.t;
         final saved = appState.isSaved(tip.id);
 
         final shareButton = FilledButton(
@@ -21,7 +22,7 @@ class TipCard extends StatelessWidget {
             backgroundColor: savedMode ? Colors.green : Colors.blue,
           ),
           onPressed: () => Share.share('${tip.title}\n\n${tip.body}'),
-          child: Text(savedMode ? 'Share' : 'Share Tip'),
+          child: Text(savedMode ? t('share') : t('shareTip')),
         );
 
         final saveOrRemoveButton = FilledButton(
@@ -32,8 +33,8 @@ class TipCard extends StatelessWidget {
           ),
           onPressed: () => appState.toggleSaved(tip.id),
           child: Text(savedMode
-              ? 'Remove'
-              : (saved ? 'Saved ✓' : 'Save for Later')),
+              ? t('remove')
+              : (saved ? t('savedCheck') : t('saveLater'))),
         );
 
         return Card(

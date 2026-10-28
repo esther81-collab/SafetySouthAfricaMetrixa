@@ -18,28 +18,29 @@ class _SavedPageState extends State<SavedPage> {
     return ListenableBuilder(
       listenable: appState,
       builder: (context, _) {
+        final t = appState.t;
         final list = tips
-            .where((t) => appState.isSaved(t.id))
-            .where((t) => '${t.title} ${t.body}'
+            .where((x) => appState.isSaved(x.id))
+            .where((x) => '${x.title} ${x.body}'
             .toLowerCase()
             .contains(query.toLowerCase()))
             .toList();
 
         return Column(
           children: [
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 20, 20, 12),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Saved Tips',
-                        style: TextStyle(
+                    Text(t('savedTitle'),
+                        style: const TextStyle(
                             fontSize: 26, fontWeight: FontWeight.w600)),
-                    SizedBox(height: 2),
-                    Text('Your personal safety collection',
-                        style: TextStyle(color: Colors.grey)),
+                    const SizedBox(height: 2),
+                    Text(t('savedSub'),
+                        style: const TextStyle(color: Colors.grey)),
                   ],
                 ),
               ),
@@ -49,7 +50,7 @@ class _SavedPageState extends State<SavedPage> {
               child: TextField(
                 onChanged: (v) => setState(() => query = v),
                 decoration: InputDecoration(
-                  hintText: 'Search your saved tips...',
+                  hintText: t('search'),
                   prefixIcon: const Icon(Icons.search),
                   filled: true,
                   fillColor: Colors.white,
@@ -65,16 +66,14 @@ class _SavedPageState extends State<SavedPage> {
               child: list.isEmpty
                   ? Center(
                 child: Text(
-                  appState.saved.isEmpty
-                      ? 'Nothing saved yet.\nTap "Save for Later" on a tip.'
-                      : 'No saved tips match your search.',
+                  appState.saved.isEmpty ? t('nothingSaved') : t('noMatch'),
                   textAlign: TextAlign.center,
                   style: const TextStyle(color: Colors.grey),
                 ),
               )
                   : ListView(
                 children: [
-                  for (final t in list) TipCard(t, savedMode: true),
+                  for (final x in list) TipCard(x, savedMode: true),
                 ],
               ),
             ),

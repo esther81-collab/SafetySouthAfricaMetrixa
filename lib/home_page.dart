@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'app_state.dart';
+import 'category_detail_page.dart';
+import 'data.dart';
 
-void _say(BuildContext context, String message) {
-  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+Tip tipOfTheDay() {
+  final now = DateTime.now();
+  final day = now.difference(DateTime(now.year)).inDays;
+  return tips[day % tips.length];
 }
 
 Widget _card(Widget child) {
@@ -14,143 +21,174 @@ Widget _card(Widget child) {
   );
 }
 
-class _Tile {
-  final IconData icon;
-  final String label;
-  final Color color;
-  const _Tile(this.icon, this.label, this.color);
-}
-
-const _tiles = <_Tile>[
-  _Tile(Icons.home_rounded, 'Home Safety', Colors.teal),
-  _Tile(Icons.favorite_rounded, 'Dating Safety', Colors.pink),
-  _Tile(Icons.directions_car_rounded, 'Transport', Colors.blue),
-  _Tile(Icons.nightlife_rounded, 'Night Out', Colors.deepPurple),
-];
-
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
+  Future<void> _callPolice(BuildContext context) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final ok = await launchUrl(Uri(scheme: 'tel', path: '10111'));
+    if (!ok) {
+      messenger.showSnackBar(
+          const SnackBar(content: Text('Could not open the phone dialer')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: [
-        const Padding(
-          padding: EdgeInsets.fromLTRB(20, 20, 20, 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Welcome to Angel Guard',
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.w600)),
-              SizedBox(height: 2),
-              Text('Your personal safety companion',
-                  style: TextStyle(color: Colors.grey)),
-            ],
-          ),
-        ),
-
-        // Tip of the Day
-        _card(
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('☀️ Tip of the Day',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 8),
-              const Text('When travelling or going out',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 6),
-              Text(
-                "Always tell someone where you're going and when you'll be back. "
-                    'Share your live location with a trusted contact during commutes or nights out.',
-                style: TextStyle(color: Colors.grey.shade800, height: 1.4),
-              ),
-              const SizedBox(height: 12),
-              Row(
+    final tip = tipOfTheDay();
+    return ListenableBuilder(
+      listenable: appState,
+      builder: (context, _) {
+        final t = appState.t;
+        final saved = appState.isSaved(tip.id);
+        return ListView(
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
+              child: Row(
                 children: [
-                  FilledButton(
-                    style: FilledButton.styleFrom(backgroundColor: Colors.green),
-                    onPressed: () => _say(context, 'Saving comes in a later step'),
-                    child: const Text('Save for Later'),
-                  ),
-                  const SizedBox(width: 10),
-                  FilledButton(
-                    style: FilledButton.styleFrom(backgroundColor: Colors.blue),
-                    onPressed: () => _say(context, 'Sharing comes in a later step'),
-                    child: const Text('Share Tip'),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-
-        // Category tiles
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
-          child: GridView.count(
-            crossAxisCount: 2,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            childAspectRatio: 1.6,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            children: [
-              for (final t in _tiles)
-                InkWell(
-                  borderRadius: BorderRadius.circular(20),
-                  onTap: () => _say(context, '${t.label} opens in a later step'),
-                  child: Ink(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.asset(
+                      'assets/logo.png',
+                      width: 52,
+                      height: 52,
+                      fit: BoxFit.cover,
                     ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Icon(t.icon, color: t.color, size: 32),
-                        const SizedBox(height: 8),
-                        Text(t.label,
-                            style: const TextStyle(fontWeight: FontWeight.w600)),
+                        Text(t('welcome'),
+                            style: const TextStyle(
+                                fontSize: 24, fontWeight: FontWeight.w600)),
+                        const SizedBox(height: 2),
+                        Text(t('tagline'), style: const TextStyle(color: Colors.grey)),
                       ],
                     ),
                   ),
-                ),
-            ],
-          ),
-        ),
+                ],
+              ),
+            ),
 
-        // Emergency contact
-        const Padding(
-          padding: EdgeInsets.fromLTRB(20, 20, 20, 4),
-          child: Text('Emergency Contacts',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
-        ),
-        _card(
-          Row(
-            children: [
-              const Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Police Emergency',
-                        style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
-                    Text('10111'),
-                    Text('For immediate police assistance',
-                        style: TextStyle(color: Colors.grey, fontSize: 13)),
-                  ],
-                ),
+            // Tip of the Day
+            _card(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('☀️ ${t('tipOfDay')}',
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 8),
+                  Text(tip.title,
+                      style: const TextStyle(
+                          fontSize: 16, fontWeight: FontWeight.w600)),
+                  const SizedBox(height: 6),
+                  Text(tip.body,
+                      style:
+                      TextStyle(color: Colors.grey.shade800, height: 1.4)),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: saved ? Colors.grey : Colors.green,
+                        ),
+                        onPressed: () => appState.toggleSaved(tip.id),
+                        child: Text(saved ? t('savedCheck') : t('saveLater')),
+                      ),
+                      const SizedBox(width: 10),
+                      FilledButton(
+                        style: FilledButton.styleFrom(
+                            backgroundColor: Colors.blue),
+                        onPressed: () =>
+                            Share.share('${tip.title}\n\n${tip.body}'),
+                        child: Text(t('shareTip')),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              FilledButton(
-                style: FilledButton.styleFrom(backgroundColor: Colors.pink),
-                onPressed: () => _say(context, 'Calling comes in a later step'),
-                child: const Text('Call'),
+            ),
+
+            // Category tiles (first four categories)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
+              child: GridView.count(
+                crossAxisCount: 2,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                childAspectRatio: 1.6,
+                mainAxisSpacing: 10,
+                crossAxisSpacing: 10,
+                children: [
+                  for (final c in categories.take(4))
+                    InkWell(
+                      borderRadius: BorderRadius.circular(20),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => CategoryDetailPage(c)),
+                      ),
+                      child: Ink(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(c.icon, color: c.color, size: 32),
+                            const SizedBox(height: 8),
+                            Text(c.name,
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w600)),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
               ),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
-      ],
+            ),
+
+            // Emergency contact
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 4),
+              child: Text(t('emergencyContacts'),
+                  style: const TextStyle(
+                      fontSize: 20, fontWeight: FontWeight.w600)),
+            ),
+            _card(
+              Row(
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Police Emergency',
+                            style: TextStyle(
+                                fontSize: 17, fontWeight: FontWeight.w600)),
+                        const Text('10111'),
+                        Text(t('policeNote'),
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 13)),
+                      ],
+                    ),
+                  ),
+                  FilledButton(
+                    style: FilledButton.styleFrom(backgroundColor: Colors.pink),
+                    onPressed: () => _callPolice(context),
+                    child: Text(t('call')),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+          ],
+        );
+      },
     );
   }
 }

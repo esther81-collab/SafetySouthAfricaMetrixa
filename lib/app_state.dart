@@ -15,6 +15,10 @@ class AppState extends ChangeNotifier {
   String lang = 'en';
   bool dailyTips = true;
   bool alerts = false;
+  bool isLoggedIn = false;
+  String userEmail = '';
+  String registeredEmail = '';
+  String registeredPassword = '';
 
   String t(String key) => strings[lang]?[key] ?? strings['en']![key] ?? key;
 
@@ -25,13 +29,57 @@ class AppState extends ChangeNotifier {
     lang = _prefs!.getString('lang') ?? 'en';
     dailyTips = _prefs!.getBool('daily') ?? true;
     alerts = _prefs!.getBool('alerts') ?? false;
+    isLoggedIn = _prefs!.getBool('isLoggedIn') ?? false;
+    userEmail = _prefs!.getString('userEmail') ?? '';
+    registeredEmail = _prefs!.getString('regEmail') ?? '';
+    registeredPassword = _prefs!.getString('regPass') ?? '';
     contacts = (_prefs!.getStringList('contacts') ?? []).map((s) {
       final i = s.indexOf('|');
       return MyContact(s.substring(0, i), s.substring(i + 1));
     }).toList();
   }
 
+  Future<void> login(String email) async {
+    isLoggedIn = true;
+    userEmail = email;
+    await _prefs?.setBool('isLoggedIn', true);
+    await _prefs?.setString('userEmail', email);
+    notifyListeners();
+  }
+
+  Future<void> register(String email, String password) async {
+    registeredEmail = email;
+    registeredPassword = password;
+    await _prefs?.setString('regEmail', email);
+    await _prefs?.setString('regPass', password);
+    await login(email);
+  }
+
+  Future<bool> loginWithCredentials(String email, String password) async {
+    // If no account has been registered yet, allow sign in and register it
+    if (registeredEmail.isEmpty) {
+      await register(email, password);
+      return true;
+    }
+    // Verify credentials
+    if (email.trim().toLowerCase() == registeredEmail.toLowerCase() &&
+        password == registeredPassword) {
+      await login(email);
+      return true;
+    }
+    return false;
+  }
+
+  Future<void> logout() async {
+    isLoggedIn = false;
+    userEmail = '';
+    await _prefs?.setBool('isLoggedIn', false);
+    await _prefs?.remove('userEmail');
+    notifyListeners();
+  }
+
   bool isSaved(String id) => saved.contains(id);
+  bool isSubscribed(String id) => subscribed.contains(id);
 
   void toggleSaved(String id) {
     saved.contains(id) ? saved.remove(id) : saved.add(id);

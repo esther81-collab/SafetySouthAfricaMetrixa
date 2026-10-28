@@ -1,4 +1,4 @@
-package com.example.angel_guard
+package com.example.metrixa
 
 import io.flutter.embedding.android.FlutterActivity
 
