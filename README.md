@@ -1,6 +1,6 @@
 <div align="center">
 
-  <img src="/home/wethinkcode_/AndroidStudioProjects/Metrixa/web/icons/Matrixa_ Safety, Support, Hope.png" />
+  <img src="Matrixa_ Safety, Support, Hope.png" />
 
   # Metrixa
   ### **Safety • Support • Hope**
