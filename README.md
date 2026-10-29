@@ -16,13 +16,13 @@
 
 ---
 
-## 🌟 Overview
+## Overview
 
 **Metrixa** is a compassionate, privacy-focused mobile application built with **Flutter**. It equips users with essential safety resources, emergency contacts, subscription-based safety alerts, multi-language support (English, Zulu, and Xhosa), and secure live GPS location sharing in critical situations.
 
 ---
 
-## ✨ Key Features
+## Key Features
 
 -  **Secure Account Creation & Login**:
   - Sign up with your email and password.
@@ -42,7 +42,7 @@
 
 ---
 
-## 📱 App Screenshots / Flow
+##  App Screenshots / Flow
 
 ```mermaid
 graph TD
